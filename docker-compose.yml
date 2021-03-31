@@ -1,0 +1,53 @@
+version: '3'
+services:
+  web:
+    restart: always
+    build: .
+    volumes:
+      - ./:/var/www/
+    depends_on:
+      - db
+    ports:
+      - "8090:8090"
+  db:
+    image: postgres:12.0-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ff
+    volumes:
+    - "./.docker/dbdata:/var/lib/postgresql/data"
+
+  nginx:
+    build: ./.docker/nginx
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - web
+
+  adminer:
+   image: adminer
+   restart: always
+   ports:
+    - 6080:8080
+
+  composer:
+   image: composer
+   volumes:
+    - .:/app
+   command: install
+
+  node:
+   image: "node:10.14.2"
+   user: "node"
+   working_dir: /home/node/app
+   environment:
+     - NODE_ENV=development
+   volumes:
+     - ./:/home/node/app
+   expose:
+     - "8081"
+   command: "npm start"
