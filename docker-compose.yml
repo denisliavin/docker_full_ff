@@ -8,7 +8,7 @@ services:
     depends_on:
       - db
     ports:
-      - "8090:8090"
+      - "6001:6001"
   db:
     image: postgres:12.0-alpine
     restart: always
@@ -22,7 +22,7 @@ services:
     build: ./.docker/nginx
     restart: always
     ports:
-      - "8000:80"
+      - "8001:80"
     volumes:
       - ./:/var/www
     depends_on:
@@ -34,14 +34,8 @@ services:
    ports:
     - 6080:8080
 
-  composer:
-   image: composer
-   volumes:
-    - .:/app
-   command: install
-
   node:
-   image: "node:10.14.2"
+   image: "node:16.13.0"
    user: "node"
    working_dir: /home/node/app
    environment:
